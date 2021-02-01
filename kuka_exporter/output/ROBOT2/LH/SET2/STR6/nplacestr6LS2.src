@@ -1,0 +1,660 @@
+&ACCESS RVP
+&REL 1
+&PARAM TEMPLATE = C:\KRC\Roboter\Template\ExpertVorgabe
+&PARAM EDITMASK = * 
+DEF nplacestr6LS2( )
+;FOLD INI
+  ;FOLD BASISTECH INI
+    GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+    INTERRUPT ON 3 
+    BAS (#INITMOV,0 )
+  ;ENDFOLD (BASISTECH INI)
+  ;FOLD USER INI
+    ;Make your modifications here
+
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+
+
+
+
+SWITCH NumCuring
+
+;*******************************************************
+CASE 90601
+;*******************************************************
+;*** Utilizar para hacer touchup en ptp a continuacion ***;
+; 1  Ejecutar Axis_Rob_Move
+; 2  Hacer TouchUp en ptp
+; 3  Eliminar Axis_Rob_Move y comentarios
+
+Axis_Rob_Move(1.69,-82.8,66.93,14.32,12.14,193,70,50)
+
+;FOLD PTP pWB90601LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90601LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90601LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90601LS2
+;ENDFOLD
+;*********************************************************;
+
+;***Axis_Rob_Move de ayuda para aproximarse a dejada ***;
+; Borrar tras touchup en LIN de dejada
+Axis_Rob_Move(-90.22,-57.13,49.23,-5.44,97.37,193.9,20,50)
+;*******************************************************;
+
+PTP_OFFS(XP90601LS2, FP90601LS2, 0, -450, 30, 0, 0, 0, #TOOL, 20, 50, 0.0)
+
+Cicle_Grp_M1000 (Inic_Pla_Right)
+
+;***borrar***;
+cyltopos(prg_200)
+halt
+;************;
+
+LIN_OFFS(XP90601LS2, FP90601LS2, 0, 0, 30, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+LIN_OFFS(XP90601LS2, FP90601LS2, 0, 0, 15, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+
+Cntr_Grp_M1000 (C05C06,RH)
+
+;FOLD LIN P90601LS2 Vel=0.1 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P90601LS2, 3:, 5:0.1, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FP90601LS2
+BAS(#CP_PARAMS,0.1)
+LIN XP90601LS2
+;ENDFOLD
+
+Cntr_Grp_M1000 (AMF09,RLS)
+Cyltopos (PRG_51)
+Cntr_Grp_M1000 (C07C08,RH)
+Cyltopos (PRG_61)
+Cntr_Grp_M1000 (AMF10,RLS)
+Cntr_Grp_M1000 (C05C06,FREE)
+Cntr_Grp_M1000 (C07C08,FREE)
+Cyltopos(PRG_88)
+LIN_REL{Z -20}#TOOL
+Cyltopos (PRG_105)
+LIN_REL{Z -30}#TOOL
+Cyltopos (PRG_200)
+
+;*** MOVIMIENTOS DE OFFSETS ***;
+
+LIN_OFFS(XP90601LS2, FP90601LS2, 0, 0, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+LIN_OFFS(XP90601LS2, FP90601LS2, 0, -450, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+
+;******* MEDICION LASER *******;
+
+LIN_OFFS(XPLAS90601LS2_1, FPLAS90601LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+cyltopos (prg_61)
+
+;FOLD LIN PLAS90601LS2_1 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90601LS2_1, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90601LS2_1
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90601LS2_1
+;ENDFOLD
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+;FOLD LIN PLAS90601LS2_2 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90601LS2_2, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90601LS2_2
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90601LS2_2
+;ENDFOLD
+
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+LIN_OFFS(XPLAS90601LS2_1, FPLAS90601LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+;******************************;
+
+;FOLD PTP pWB90601LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90601LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90601LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90601LS2
+;ENDFOLD
+
+;*******************************************************
+CASE 90603
+;*******************************************************
+;*** Utilizar para hacer touchup en ptp a continuacion ***;
+; 1  Ejecutar Axis_Rob_Move
+; 2  Hacer TouchUp en ptp
+; 3  Eliminar Axis_Rob_Move y comentarios
+
+Axis_Rob_Move(1.69,-82.8,66.93,14.32,12.14,193,70,50)
+
+;FOLD PTP pWB90603LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90603LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90603LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90603LS2
+;ENDFOLD
+;*********************************************************;
+
+;***Axis_Rob_Move de ayuda para aproximarse a dejada ***;
+; Borrar tras touchup en LIN de dejada
+Axis_Rob_Move(-90.22,-57.13,49.23,-5.44,97.37,193.9,20,50)
+;*******************************************************;
+
+PTP_OFFS(XP90603LS2, FP90603LS2, 0, -450, 30, 0, 0, 0, #TOOL, 20, 50, 0.0)
+
+Cicle_Grp_M1000 (Inic_Pla_Right)
+
+;***borrar***;
+cyltopos(prg_200)
+halt
+;************;
+
+LIN_OFFS(XP90603LS2, FP90603LS2, 0, 0, 30, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+LIN_OFFS(XP90603LS2, FP90603LS2, 0, 0, 15, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+
+Cntr_Grp_M1000 (C05C06,RH)
+
+;FOLD LIN P90603LS2 Vel=0.1 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P90603LS2, 3:, 5:0.1, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FP90603LS2
+BAS(#CP_PARAMS,0.1)
+LIN XP90603LS2
+;ENDFOLD
+
+Cntr_Grp_M1000 (AMF09,RLS)
+Cyltopos (PRG_51)
+Cntr_Grp_M1000 (C07C08,RH)
+Cyltopos (PRG_61)
+Cntr_Grp_M1000 (AMF10,RLS)
+Cntr_Grp_M1000 (C05C06,FREE)
+Cntr_Grp_M1000 (C07C08,FREE)
+Cyltopos(PRG_88)
+LIN_REL{Z -20}#TOOL
+Cyltopos (PRG_105)
+LIN_REL{Z -30}#TOOL
+Cyltopos (PRG_200)
+
+;*** MOVIMIENTOS DE OFFSETS ***;
+
+LIN_OFFS(XP90603LS2, FP90603LS2, 0, 0, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+LIN_OFFS(XP90603LS2, FP90603LS2, 0, -450, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+
+;******* MEDICION LASER *******;
+
+LIN_OFFS(XPLAS90603LS2_1, FPLAS90603LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+cyltopos (prg_61)
+
+;FOLD LIN PLAS90603LS2_1 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90603LS2_1, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90603LS2_1
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90603LS2_1
+;ENDFOLD
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+;FOLD LIN PLAS90603LS2_2 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90603LS2_2, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90603LS2_2
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90603LS2_2
+;ENDFOLD
+
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+LIN_OFFS(XPLAS90603LS2_1, FPLAS90603LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+;******************************;
+
+;FOLD PTP pWB90603LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90603LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90603LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90603LS2
+;ENDFOLD
+
+;*******************************************************
+CASE 90605
+;*******************************************************
+;*** Utilizar para hacer touchup en ptp a continuacion ***;
+; 1  Ejecutar Axis_Rob_Move
+; 2  Hacer TouchUp en ptp
+; 3  Eliminar Axis_Rob_Move y comentarios
+
+Axis_Rob_Move(1.69,-82.8,66.93,14.32,12.14,193,70,50)
+
+;FOLD PTP pWB90605LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90605LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90605LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90605LS2
+;ENDFOLD
+;*********************************************************;
+
+;***Axis_Rob_Move de ayuda para aproximarse a dejada ***;
+; Borrar tras touchup en LIN de dejada
+Axis_Rob_Move(-90.22,-57.13,49.23,-5.44,97.37,193.9,20,50)
+;*******************************************************;
+
+PTP_OFFS(XP90605LS2, FP90605LS2, 0, -450, 30, 0, 0, 0, #TOOL, 20, 50, 0.0)
+
+Cicle_Grp_M1000 (Inic_Pla_Right)
+
+;***borrar***;
+cyltopos(prg_200)
+halt
+;************;
+
+LIN_OFFS(XP90605LS2, FP90605LS2, 0, 0, 30, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+LIN_OFFS(XP90605LS2, FP90605LS2, 0, 0, 15, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+
+Cntr_Grp_M1000 (C05C06,RH)
+
+;FOLD LIN P90605LS2 Vel=0.1 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P90605LS2, 3:, 5:0.1, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FP90605LS2
+BAS(#CP_PARAMS,0.1)
+LIN XP90605LS2
+;ENDFOLD
+
+Cntr_Grp_M1000 (AMF09,RLS)
+Cyltopos (PRG_51)
+Cntr_Grp_M1000 (C07C08,RH)
+Cyltopos (PRG_61)
+Cntr_Grp_M1000 (AMF10,RLS)
+Cntr_Grp_M1000 (C05C06,FREE)
+Cntr_Grp_M1000 (C07C08,FREE)
+Cyltopos(PRG_88)
+LIN_REL{Z -20}#TOOL
+Cyltopos (PRG_105)
+LIN_REL{Z -30}#TOOL
+Cyltopos (PRG_200)
+
+;*** MOVIMIENTOS DE OFFSETS ***;
+
+LIN_OFFS(XP90605LS2, FP90605LS2, 0, 0, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+LIN_OFFS(XP90605LS2, FP90605LS2, 0, -450, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+
+;******* MEDICION LASER *******;
+
+LIN_OFFS(XPLAS90605LS2_1, FPLAS90605LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+cyltopos (prg_61)
+
+;FOLD LIN PLAS90605LS2_1 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90605LS2_1, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90605LS2_1
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90605LS2_1
+;ENDFOLD
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+;FOLD LIN PLAS90605LS2_2 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90605LS2_2, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90605LS2_2
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90605LS2_2
+;ENDFOLD
+
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+LIN_OFFS(XPLAS90605LS2_1, FPLAS90605LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+;******************************;
+
+;FOLD PTP pWB90605LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90605LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90605LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90605LS2
+;ENDFOLD
+
+;*******************************************************
+CASE 90607
+;*******************************************************
+;*** Utilizar para hacer touchup en ptp a continuacion ***;
+; 1  Ejecutar Axis_Rob_Move
+; 2  Hacer TouchUp en ptp
+; 3  Eliminar Axis_Rob_Move y comentarios
+
+Axis_Rob_Move(1.69,-82.8,66.93,14.32,12.14,193,70,50)
+
+;FOLD PTP pWB90607LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90607LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90607LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90607LS2
+;ENDFOLD
+;*********************************************************;
+
+;***Axis_Rob_Move de ayuda para aproximarse a dejada ***;
+; Borrar tras touchup en LIN de dejada
+Axis_Rob_Move(-90.22,-57.13,49.23,-5.44,97.37,193.9,20,50)
+;*******************************************************;
+
+PTP_OFFS(XP90607LS2, FP90607LS2, 0, -450, 30, 0, 0, 0, #TOOL, 20, 50, 0.0)
+
+Cicle_Grp_M1000 (Inic_Pla_Right)
+
+;***borrar***;
+cyltopos(prg_200)
+halt
+;************;
+
+LIN_OFFS(XP90607LS2, FP90607LS2, 0, 0, 30, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+LIN_OFFS(XP90607LS2, FP90607LS2, 0, 0, 15, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+
+Cntr_Grp_M1000 (C05C06,RH)
+
+;FOLD LIN P90607LS2 Vel=0.1 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P90607LS2, 3:, 5:0.1, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FP90607LS2
+BAS(#CP_PARAMS,0.1)
+LIN XP90607LS2
+;ENDFOLD
+
+Cntr_Grp_M1000 (AMF09,RLS)
+Cyltopos (PRG_51)
+Cntr_Grp_M1000 (C07C08,RH)
+Cyltopos (PRG_61)
+Cntr_Grp_M1000 (AMF10,RLS)
+Cntr_Grp_M1000 (C05C06,FREE)
+Cntr_Grp_M1000 (C07C08,FREE)
+Cyltopos(PRG_88)
+LIN_REL{Z -20}#TOOL
+Cyltopos (PRG_105)
+LIN_REL{Z -30}#TOOL
+Cyltopos (PRG_200)
+
+;*** MOVIMIENTOS DE OFFSETS ***;
+
+LIN_OFFS(XP90607LS2, FP90607LS2, 0, 0, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+LIN_OFFS(XP90607LS2, FP90607LS2, 0, -450, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+
+;******* MEDICION LASER *******;
+
+LIN_OFFS(XPLAS90607LS2_1, FPLAS90607LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+cyltopos (prg_61)
+
+;FOLD LIN PLAS90607LS2_1 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90607LS2_1, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90607LS2_1
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90607LS2_1
+;ENDFOLD
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+;FOLD LIN PLAS90607LS2_2 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90607LS2_2, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90607LS2_2
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90607LS2_2
+;ENDFOLD
+
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+LIN_OFFS(XPLAS90607LS2_1, FPLAS90607LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+;******************************;
+
+;FOLD PTP pWB90607LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90607LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90607LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90607LS2
+;ENDFOLD
+
+;*******************************************************
+CASE 90609
+;*******************************************************
+;*** Utilizar para hacer touchup en ptp a continuacion ***;
+; 1  Ejecutar Axis_Rob_Move
+; 2  Hacer TouchUp en ptp
+; 3  Eliminar Axis_Rob_Move y comentarios
+
+Axis_Rob_Move(1.69,-82.8,66.93,14.32,12.14,193,70,50)
+
+;FOLD PTP pWB90609LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90609LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90609LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90609LS2
+;ENDFOLD
+;*********************************************************;
+
+;***Axis_Rob_Move de ayuda para aproximarse a dejada ***;
+; Borrar tras touchup en LIN de dejada
+Axis_Rob_Move(-90.22,-57.13,49.23,-5.44,97.37,193.9,20,50)
+;*******************************************************;
+
+PTP_OFFS(XP90609LS2, FP90609LS2, 0, -450, 30, 0, 0, 0, #TOOL, 20, 50, 0.0)
+
+Cicle_Grp_M1000 (Inic_Pla_Right)
+
+;***borrar***;
+cyltopos(prg_200)
+halt
+;************;
+
+LIN_OFFS(XP90609LS2, FP90609LS2, 0, 0, 30, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+LIN_OFFS(XP90609LS2, FP90609LS2, 0, 0, 15, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+
+Cntr_Grp_M1000 (C05C06,RH)
+
+;FOLD LIN P90609LS2 Vel=0.1 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P90609LS2, 3:, 5:0.1, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FP90609LS2
+BAS(#CP_PARAMS,0.1)
+LIN XP90609LS2
+;ENDFOLD
+
+Cntr_Grp_M1000 (AMF09,RLS)
+Cyltopos (PRG_51)
+Cntr_Grp_M1000 (C07C08,RH)
+Cyltopos (PRG_61)
+Cntr_Grp_M1000 (AMF10,RLS)
+Cntr_Grp_M1000 (C05C06,FREE)
+Cntr_Grp_M1000 (C07C08,FREE)
+Cyltopos(PRG_88)
+LIN_REL{Z -20}#TOOL
+Cyltopos (PRG_105)
+LIN_REL{Z -30}#TOOL
+Cyltopos (PRG_200)
+
+;*** MOVIMIENTOS DE OFFSETS ***;
+
+LIN_OFFS(XP90609LS2, FP90609LS2, 0, 0, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+LIN_OFFS(XP90609LS2, FP90609LS2, 0, -450, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+
+;******* MEDICION LASER *******;
+
+LIN_OFFS(XPLAS90609LS2_1, FPLAS90609LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+cyltopos (prg_61)
+
+;FOLD LIN PLAS90609LS2_1 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90609LS2_1, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90609LS2_1
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90609LS2_1
+;ENDFOLD
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+;FOLD LIN PLAS90609LS2_2 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90609LS2_2, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90609LS2_2
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90609LS2_2
+;ENDFOLD
+
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+LIN_OFFS(XPLAS90609LS2_1, FPLAS90609LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+;******************************;
+
+;FOLD PTP pWB90609LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90609LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90609LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90609LS2
+;ENDFOLD
+
+;*******************************************************
+CASE 90611
+;*******************************************************
+;*** Utilizar para hacer touchup en ptp a continuacion ***;
+; 1  Ejecutar Axis_Rob_Move
+; 2  Hacer TouchUp en ptp
+; 3  Eliminar Axis_Rob_Move y comentarios
+
+Axis_Rob_Move(1.69,-82.8,66.93,14.32,12.14,193,70,50)
+
+;FOLD PTP pWB90611LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90611LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90611LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90611LS2
+;ENDFOLD
+;*********************************************************;
+
+;***Axis_Rob_Move de ayuda para aproximarse a dejada ***;
+; Borrar tras touchup en LIN de dejada
+Axis_Rob_Move(-90.22,-57.13,49.23,-5.44,97.37,193.9,20,50)
+;*******************************************************;
+
+PTP_OFFS(XP90611LS2, FP90611LS2, 0, -450, 30, 0, 0, 0, #TOOL, 20, 50, 0.0)
+
+Cicle_Grp_M1000 (Inic_Pla_Right)
+
+;***borrar***;
+cyltopos(prg_200)
+halt
+;************;
+
+LIN_OFFS(XP90611LS2, FP90611LS2, 0, 0, 30, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+LIN_OFFS(XP90611LS2, FP90611LS2, 0, 0, 15, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+
+Cntr_Grp_M1000 (C05C06,RH)
+
+;FOLD LIN P90611LS2 Vel=0.1 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P90611LS2, 3:, 5:0.1, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FP90611LS2
+BAS(#CP_PARAMS,0.1)
+LIN XP90611LS2
+;ENDFOLD
+
+Cntr_Grp_M1000 (AMF09,RLS)
+Cyltopos (PRG_51)
+Cntr_Grp_M1000 (C07C08,RH)
+Cyltopos (PRG_61)
+Cntr_Grp_M1000 (AMF10,RLS)
+Cntr_Grp_M1000 (C05C06,FREE)
+Cntr_Grp_M1000 (C07C08,FREE)
+Cyltopos(PRG_88)
+LIN_REL{Z -20}#TOOL
+Cyltopos (PRG_105)
+LIN_REL{Z -30}#TOOL
+Cyltopos (PRG_200)
+
+;*** MOVIMIENTOS DE OFFSETS ***;
+
+LIN_OFFS(XP90611LS2, FP90611LS2, 0, 0, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+LIN_OFFS(XP90611LS2, FP90611LS2, 0, -450, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+
+;******* MEDICION LASER *******;
+
+LIN_OFFS(XPLAS90611LS2_1, FPLAS90611LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+cyltopos (prg_61)
+
+;FOLD LIN PLAS90611LS2_1 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90611LS2_1, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90611LS2_1
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90611LS2_1
+;ENDFOLD
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+;FOLD LIN PLAS90611LS2_2 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS90611LS2_2, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS90611LS2_2
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS90611LS2_2
+;ENDFOLD
+
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+LIN_OFFS(XPLAS90611LS2_1, FPLAS90611LS2_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+;******************************;
+
+;FOLD PTP pWB90611LS2 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[9]:BWB2S2;%{PE}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB90611LS2, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB90611LS2
+BAS(#PTP_PARAMS,100)
+PTP XpWB90611LS2
+;ENDFOLD
+
+ENDSWITCH
+END
