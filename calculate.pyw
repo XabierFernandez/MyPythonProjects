@@ -1,6 +1,6 @@
 from __future__ import division
 
-from PySide2.QtCore import QObject, Signal, Slot
+from PySide2.QtCore import QObject, SIGNAL, SLOT
 from PySide2.QtWidgets import QDialog, QTextBrowser, QLineEdit, QApplication, QVBoxLayout
 import sys
 
@@ -8,19 +8,16 @@ import sys
 class Form(QDialog):
     def __init__(self, parent=None):
         super(Form, self).__init__(parent)
+        self.setWindowTitle("Calculate")
         self.browser = QTextBrowser()
-        self.lineedit = QLineEdit("Type an expression and press Enter")
-        self.lineedit.selectAll()
+        self.lineedit = QLineEdit("Type an arithmetic operation")
+        #self.lineedit.selectAll()
         layout = QVBoxLayout()
         layout.addWidget(self.browser)
         layout.addWidget(self.lineedit)
         self.setLayout(layout)
         self.lineedit.setFocus()
-
-        self.lineedit.
-
-
-        self.setWindowTitle("Calculate")
+        self.lineedit.returnPressed.connect(self.updateUi)
 
     def updateUi(self):
         try:
