@@ -127,3 +127,18 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/MyPythonProjects.iml
+/kuka_exporter/output/ROBOT2/RH/SET1/STR3/nplacestr3RS1.dat
+/kuka_exporter/output/ROBOT2/RH/SET1/STR3/nplacestr3RS1.src
+/kuka_exporter/output/ROBOT1/RH/SET1/STR4/nplacestr4RS1.dat
+/kuka_exporter/output/ROBOT2/RH/SET1/STR4/nplacestr4RS1.dat
+/kuka_exporter/output/ROBOT1/RH/SET1/STR4/nplacestr4RS1.src
+/kuka_exporter/output/ROBOT2/RH/SET1/STR4/nplacestr4RS1.src
+/kuka_exporter/output/ROBOT1/RH/SET1/STR16/nplacestr16RS1.dat
+/kuka_exporter/output/ROBOT1/RH/SET1/STR16/nplacestr16RS1.src
+/.idea/other.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/kuka_exporter/output
+
