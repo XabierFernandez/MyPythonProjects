@@ -33,6 +33,8 @@ DEF {0}( )
 ;ENDFOLD (INI)
 
 
+
+
 SWITCH NumCuring
 """
 ##################################################################
@@ -51,82 +53,130 @@ CASE {0}
 	
 
 TrayCase1 = """
-;FOLD PTP P{0[0]} CONT Vel=100 % PDAT{0[0]} Tool[{1}]:{2} Base[{3}] :{4} ;%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P{0[0]}, 3:C_PTP, 5:100, 7:PDAT{0[0]}
+;*** Utilizar para hacer touchup en ptp a continuacion ***;
+; 1  Ejecutar Axis_Rob_Move
+; 2  Hacer TouchUp en ptp
+; 3  Eliminar Axis_Rob_Move y comentarios
+
+Axis_Rob_Move(1.69,-82.8,66.93,14.32,12.14,193,70,50)
+
+;FOLD PTP pWB{0}RS1 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[{1}]:{2};%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB{0}RS1, 3:, 5:100, 7:PDAT_MESA
 $BWDSTART=FALSE
-PDAT_ACT=PPDAT{0[0]}
-FDAT_ACT=FP{0[0]}
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB{0}RS1
 BAS(#PTP_PARAMS,100)
-PTP XP{0[0]} C_PTP
-;ENDFOLD"""
+PTP XpWB{0}RS1
+;ENDFOLD
+;*********************************************************;
+
+;***Axis_Rob_Move de ayuda para aproximarse a dejada ***;
+; Borrar tras touchup en LIN de dejada
+Axis_Rob_Move(-90.22,-57.13,49.23,-5.44,97.37,193.9,20,50)
+;*******************************************************;
+
+PTP_OFFS(XP{0}RS1, FP{0}RS1, 0, -450, 30, 0, 0, 0, #TOOL, 20, 50, 0.0)
+
+Cicle_Grp_M1000 (Inic_Pla_Right)
+
+;***borrar***;
+cyltopos(prg_200)
+halt
+;************;
+
+LIN_OFFS(XP{0}RS1, FP{0}RS1, 0, 0, 30, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+LIN_OFFS(XP{0}RS1, FP{0}RS1, 0, 0, 15, 0, 0, 0, #TOOL, 0.1, 50, 0.0)
+
+Cntr_Grp_M1000 (C05C06,RH)
+"""
 #######################################################################################################
 TrayCase1_dat = """
-DECL E6POS XP{0[0]}={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
-DECL PDAT PPDAT{0[0]}={{VEL 100.0,ACC 100.0,APO_DIST 100.0,APO_MODE #CPTP}}
-DECL FDAT FP{0[0]}={{TOOL_NO {1},BASE_NO {3},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
+DECL E6POS XpWB{0}RS1={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
+DECL FDAT FpWB{0}RS1={{TOOL_NO 10,BASE_NO {1},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
 ;"""
 #######################################################################################################
+
 TrayCase2 = """
-;FOLD PTP P{0[1]} CONT Vel=100 % PDAT{0[1]} Tool[{1}]:{2} Base[{3}] :{4} ;%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P{0[1]}, 3:C_PTP, 5:100, 7:PDAT{0[1]}
+;FOLD LIN P{0}RS1 Vel=0.1 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[{1}]:{2};%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P{0}RS1, 3:, 5:0.1, 7:V020Z0
 $BWDSTART=FALSE
-PDAT_ACT=PPDAT{0[1]}
-FDAT_ACT=FP{0[1]}
-BAS(#PTP_PARAMS,100)
-PTP XP{0[1]} C_PTP
-;ENDFOLD"""
+LDAT_ACT=LV020Z0
+FDAT_ACT=FP{0}RS1
+BAS(#CP_PARAMS,0.1)
+LIN XP{0}RS1
+;ENDFOLD
+
+Cntr_Grp_M1000 (AMF09,RLS)
+Cyltopos (PRG_51)
+Cntr_Grp_M1000 (C07C08,RH)
+Cyltopos (PRG_61)
+Cntr_Grp_M1000 (AMF10,RLS)
+Cntr_Grp_M1000 (C05C06,FREE)
+Cntr_Grp_M1000 (C07C08,FREE)
+Cyltopos(PRG_88)
+LIN_REL{{Z -20}}#TOOL
+Cyltopos (PRG_105)
+LIN_REL{{Z -30}}#TOOL
+Cyltopos (PRG_200)
+
+;*** MOVIMIENTOS DE OFFSETS ***;
+
+LIN_OFFS(XP{0}RS1, FP{0}RS1, 0, 0, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+LIN_OFFS(XP{0}RS1, FP{0}RS1, 0, -450, -50, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+"""
 #######################################################################################################
 TrayCase2_dat = """
-DECL E6POS XP{0[1]}={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
-DECL PDAT PPDAT{0[1]}={{VEL 100.0,ACC 100.0,APO_DIST 100.0,APO_MODE #CPTP}}
-DECL FDAT FP{0[1]}={{TOOL_NO {1},BASE_NO {3},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
+DECL E6POS XP{0}RS1={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
+DECL FDAT FP{0}RS1={{TOOL_NO 10,BASE_NO {1},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
 ;"""
 #######################################################################################################
+
 TrayCase3 = """
-;FOLD PTP P{0[2]} Vel=100 % PDAT{0[2]} Tool[{1}]:{2} Base[{3}] :{4} ;%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P{0[2]}, 3:C_PTP, 5:100, 7:PDAT{0[2]}
+;******* MEDICION LASER *******;
+
+LIN_OFFS(XPLAS{0}RS1_1, FPLAS{0}RS1_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+cyltopos (prg_61)
+
+;FOLD LIN PLAS{0}RS1_1 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[{1}]:{2};%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS{0}RS1_1, 3:, 5:0.3, 7:V020Z0
 $BWDSTART=FALSE
-PDAT_ACT=PPDAT{0[2]}
-FDAT_ACT=FP{0[2]}
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS{0}RS1_1
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS{0}RS1_1
+;ENDFOLD
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+;FOLD LIN PLAS{0}RS1_2 Vel=0.3 m/s LV020Z0 Tool[10]:AMF1_G1000 Base[{1}]:{2};%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PLAS{0}RS1_2, 3:, 5:0.3, 7:V020Z0
+$BWDSTART=FALSE
+LDAT_ACT=LV020Z0
+FDAT_ACT=FPLAS{0}RS1_2
+BAS(#CP_PARAMS,0.3)
+LIN XPLAS{0}RS1_2
+;ENDFOLD
+
+
+;Movimimiento de busqueda con laser
+;Search( , )
+
+LIN_OFFS(XPLAS{0}RS1_1, FPLAS{0}RS1_1, 0, -200, 0, 0, 0, 0, #TOOL, 0.3, 50, 0.0)
+
+;******************************;
+
+;FOLD PTP pWB{0}RS1 Vel=100 % PDAT_MESA Tool[10]:AMF1_G1000 Base[{1}]:{2};%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:pWB{0}RS1, 3:, 5:100, 7:PDAT_MESA
+$BWDSTART=FALSE
+PDAT_ACT=PPDAT_MESA
+FDAT_ACT=FpWB{0}RS1
 BAS(#PTP_PARAMS,100)
-;ENDFOLD"""
+PTP XpWB{0}RS1
+;ENDFOLD
+"""
 #######################################################################################################
 TrayCase3_dat = """
-DECL E6POS XP{0[2]}={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
-DECL PDAT PPDAT{0[2]}={{VEL 100.0,ACC 100.0,APO_DIST 100.0,APO_MODE #CPTP}}
-DECL FDAT FP{0[2]}={{TOOL_NO {1},BASE_NO {3},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
-;"""
-#######################################################################################################
-
-TrayCase4 = """
-VISION()"""
-
-#######################################################################################################
-TrayCase5 = """
-;FOLD PTP P{0[3]} CONT Vel=100 % PDAT{0[3]} Tool[{1}]:{2} Base[{3}] :{4} ;%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P{0[3]}, 3:C_PTP, 5:100, 7:PDAT{0[3]}
-$BWDSTART=FALSE
-PDAT_ACT=PPDAT{0[3]}
-FDAT_ACT=FP{0[3]}
-BAS(#PTP_PARAMS,100)
-PTP XP{0[3]} C_PTP
-;ENDFOLD"""
-#######################################################################################################
-TrayCase5_dat = """
-DECL E6POS XP{0[3]}={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
-DECL PDAT PPDAT{0[3]}={{VEL 100.0,ACC 100.0,APO_DIST 100.0,APO_MODE #CPTP}}
-DECL FDAT FP{0[3]}={{TOOL_NO {1},BASE_NO {3},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
-;"""
-#######################################################################################################
-
-TrayCase6 = """
-;FOLD PTP P{0[4]} CONT Vel=100 % PDAT{0[4]} Tool[{1}]:{2} Base[{3}]:{4};%{{PE}}%R 5.5.32,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P{0[4]}, 3:C_PTP, 5:100, 7:PDAT{0[4]}
-$BWDSTART=FALSE
-PDAT_ACT=PPDAT{0[4]}
-FDAT_ACT=FP{0[4]}
-BAS(#PTP_PARAMS,100)
-PTP XP{0[4]} C_PTP
-;ENDFOLD"""
-#######################################################################################################
-TrayCase6_dat = """
-DECL E6POS XP{0[4]}={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
-DECL PDAT PPDAT{0[4]}={{VEL 100.0,ACC 100.0,APO_DIST 100.0,APO_MODE #CPTP}}
-DECL FDAT FP{0[4]}={{TOOL_NO {1},BASE_NO {3},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
+DECL E6POS XPLAS{0}RS1_1={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
+DECL FDAT FPLAS{0}RS1_1={{TOOL_NO 10,BASE_NO {1},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
+DECL E6POS XPLAS{0}RS1_2={{X 0,Y 0,Z 0,A 0,B 0,C 0,S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}}
+DECL FDAT FPLAS{0}RS1_2={{TOOL_NO 10,BASE_NO {1},IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}}
 ;"""
 #######################################################################################################

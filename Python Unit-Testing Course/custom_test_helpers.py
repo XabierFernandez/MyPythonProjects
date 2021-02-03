@@ -2,6 +2,7 @@ import functools
 import inspect
 import types
 import sys
+
 from unittest import defaultTestLoader, TestResult
 import unittest
 
@@ -15,7 +16,8 @@ def abort_tests(message="Critical failure; aborting tests."):
 
 def reload_module(module):
     if sys.version_info < (3,):
-        reload(module)
+        import imp
+        imp.reload(module)
     else:
         import importlib
         importlib.reload(module)

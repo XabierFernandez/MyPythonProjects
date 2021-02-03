@@ -1,12 +1,13 @@
 # Encoding: UTF-8
 import os
-import errno
-import openExcel
-import dat 
-import dat1 
-import dat2
-import ctypes
 import sys
+import errno
+from krc2 import openExcel
+from krc2 import dat1
+from krc2 import dat2
+from krc2 import dat3
+import tkinter
+from tkinter import messagebox
 
 ToolGarra='ToolGarra'
 NumToolGarra=7
@@ -40,7 +41,7 @@ def isIntStr(var):
                 else:
                         raise MyError(3)
         except MyError as e:
-                Mbox('AVISO!', 'El numero de stringer debe estar entre 0 y 20.\rRevisar excel.\rNumero de error: {0}'.format(e.value), 0)
+                messagebox.showwarning('AVISO!', 'El numero de stringer debe estar entre 0 y 20.\rRevisar excel.\rNumero de error: {0}'.format(e.value))
                 sys.exit(0)  
 ############################## 
 ##############################
@@ -99,7 +100,7 @@ def isLeftRight(var):
                 else:
                         raise MyError(2)
         except MyError as e:
-                Mbox('AVISO!', 'La mano del ala tiene que ser "L" o "R" ,right o left.\rRevisar excel.\rNumero de error: {0}'.format(e.value), 0)
+                messagebox.showwarning('AVISO!', 'La mano del ala tiene que ser "L" o "R" ,right o left.\rRevisar excel.\rNumero de error: {0}'.format(e.value))
                 sys.exit(0)   
                 
 ##############################        
@@ -114,7 +115,7 @@ def isSet(var):
                         raise MyError(1)
 
         except MyError as e:
-                Mbox('AVISO!', 'El numero de set tiene que estar entre 1 y 2.\rRevisar excel.\rNumero de error: {0}'.format(e.value), 0)
+                messagebox.showerror('AVISO!', 'El numero de set tiene que estar entre 1 y 2.\rRevisar excel.\rNumero de error: {0}'.format(e.value))
                 sys.exit(0)   
 ##############################
 ##############################        
@@ -128,7 +129,7 @@ def isRobot(var):
                         raise MyError(5)
 
         except MyError as e:
-                Mbox('AVISO!', 'El numero de robot tiene que estar entre 1 y 2.\rRevisar excel.\rNumero de error: {0}'.format(e.value), 0)
+                messagebox.showwarning('AVISO!', 'El numero de robot tiene que estar entre 1 y 2.\rRevisar excel.\rNumero de error: {0}'.format(e.value))
                 sys.exit(0)   
 ##############################
 def getTool(i):
@@ -208,9 +209,9 @@ def targetWriterPlace():
         global filename2
         x=0
         cur=openExcel.NumCuring
-        target2.write(dat1.HeaderSrc)
-        target2.write(dat1.DeclSrc.format(filename2))
-        target3.write(dat1.HeaderDat.format(filename2))
+        target2.write(dat2.HeaderSrc)
+        target2.write(dat2.DeclSrc.format(filename2))
+        target3.write(dat2.HeaderDat.format(filename2))
         
         for i in range(cur,0,-1):
                 curing=(openExcel.curNameList[(i-1)])
@@ -220,18 +221,18 @@ def targetWriterPlace():
                 
                 
                 
-                target2.write( dat1.HeaderCase.format(j))
-                target2.write( dat1.TrayCase1.format(j,(openExcel.baseList[(i-1)]),getBase(i)))
-                target2.write( dat1.TrayCase2.format(j,(openExcel.baseList[(i-1)]),getBase(i)))
-                target2.write( dat1.TrayCase3.format(j,(openExcel.baseList[(i-1)]),getBase(i)))
+                target2.write(dat2.HeaderCase.format(j))
+                target2.write(dat2.TrayCase1.format(j, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target2.write(dat2.TrayCase2.format(j, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target2.write(dat2.TrayCase3.format(j, (openExcel.baseList[(i - 1)]), getBase(i)))
                 #################################################                           
-                target3.write( dat1.TrayCase1_dat.format(j,(openExcel.baseList[(i-1)])))
-                target3.write( dat1.TrayCase2_dat.format(j,(openExcel.baseList[(i-1)])))
-                target3.write( dat1.TrayCase3_dat.format(j,(openExcel.baseList[(i-1)])))
+                target3.write(dat2.TrayCase1_dat.format(j, (openExcel.baseList[(i - 1)])))
+                target3.write(dat2.TrayCase2_dat.format(j, (openExcel.baseList[(i - 1)])))
+                target3.write(dat2.TrayCase3_dat.format(j, (openExcel.baseList[(i - 1)])))
                 
                 
-        target2.write( dat1.FootSrc)
-        target3.write( dat1.FootDat)
+        target2.write(dat2.FootSrc)
+        target3.write(dat2.FootDat)
 
 
         target2.close()
@@ -250,36 +251,34 @@ def leerExcel(num):
                 
 ##############################################################################################
 def main():
+    # hide main window
+    root = tkinter.Tk()
+    root.withdraw()
     count=0   
     dir_out_exists(path)            
     s='Escriba el numero de hojas que quiere procesar, despues pulse intro :'
-    numBooks=raw_input(s)
+    numBooks=input(s)
     try:
         num = int(numBooks)
             
     except ValueError as e:
-        Mbox('AVISO!', 'El valor introducido, no es valido.',0)
+        messagebox.showwarning('AVISO!', 'El valor introducido, no es valido.',0)
         sys.exit(0)        
     try:
         if num in range(50):
             for i in range(num):
                 leerExcel(i)
                 count+=1
-            Mbox('Output', 'Proceso finalizado', 0)
+            messagebox.showinfo('Output', 'Proceso finalizado')
                 
         else:
             raise MyError(4)                    
     except MyError as e:
-        Mbox('AVISO!', 'El valor introducido, debe ser un dato numerico de 0 a 50.\rNumero de error: {0}'.format(e.value), 0)
+        messagebox.showwarning('AVISO!', 'El valor introducido, debe ser un dato numerico de 0 a 50.\rNumero de error: {0}'.format(e.value))
         sys.exit(0)
     except IndexError as ex:
-        Mbox('AVISO!', 'Error de indice,numero de hojas existentes menor al valor proporcionado.\rSolo se han procesado {1} hojas.\r\r{0}'.format(ex,count), 0)
+        messagebox.showwarning('AVISO!', 'Error de indice,numero de hojas existentes menor al valor proporcionado.\rSolo se han procesado {1} hojas.\r\r{0}'.format(ex,count))
         sys.exit(0)
-    
-   
-##############################################################################################  
-def Mbox(title, text, style):
-        ctypes.windll.user32.MessageBoxA(0, text, title, style)
 ##############################################################################################
 class MyError(Exception):
                 def __init__(self, value):

@@ -2,9 +2,9 @@
 import os
 import errno
 import openExcel
-import dat 
-import dat1 
+import dat1
 import dat2
+import dat3
 import ctypes
 import sys
 
@@ -242,9 +242,9 @@ def targetWriterPick():
         global filename
         
         cur=openExcel.NumCuring
-        target.write(dat.HeaderSrc)
-        target.write(dat.DeclSrc.format(filename))
-        target1.write(dat.HeaderDat.format(filename))
+        target.write(dat1.HeaderSrc)
+        target.write(dat1.DeclSrc.format(filename))
+        target1.write(dat1.HeaderDat.format(filename))
         
         for i in range(cur,0,-1):
                 
@@ -259,24 +259,24 @@ def targetWriterPick():
                         garra='S'
                 
                 
-                target.write( dat.HeaderCase.format(j))
-                target.write( dat.TrayCase1.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target.write( dat.TrayCase2.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target.write( dat.TrayCase3.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target.write( dat.TrayCase4.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target.write( dat.TrayCase5.format(garra))
-                target.write( dat.TrayCase6.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target.write( dat.TrayCase7.format(points,NumToolGarra, ToolGarra, 1,'pick'))
+                target.write(dat1.HeaderCase.format(j))
+                target.write(dat1.TrayCase1.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target.write(dat1.TrayCase2.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target.write(dat1.TrayCase3.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target.write(dat1.TrayCase4.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target.write(dat1.TrayCase5.format(garra))
+                target.write(dat1.TrayCase6.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target.write(dat1.TrayCase7.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
                 
-                target1.write( dat.TrayCase1_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target1.write( dat.TrayCase2_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target1.write( dat.TrayCase3_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target1.write( dat.TrayCase4_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target1.write( dat.TrayCase6_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target1.write( dat.TrayCase7_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
+                target1.write(dat1.TrayCase1_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target1.write(dat1.TrayCase2_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target1.write(dat1.TrayCase3_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target1.write(dat1.TrayCase4_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target1.write(dat1.TrayCase6_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target1.write(dat1.TrayCase7_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
                 
-        target.write( dat.FootSrc)
-        target1.write( dat.FootDat)
+        target.write(dat1.FootSrc)
+        target1.write(dat1.FootDat)
 
 
         target.close()
@@ -291,9 +291,9 @@ def targetWriterPlace():
         global filename2
         x=0
         cur=openExcel.NumCuring
-        target2.write(dat1.HeaderSrc)
-        target2.write(dat1.DeclSrc.format(filename2))
-        target3.write(dat1.HeaderDat.format(filename2))
+        target2.write(dat2.HeaderSrc)
+        target2.write(dat2.DeclSrc.format(filename2))
+        target3.write(dat2.HeaderDat.format(filename2))
         
         for i in range(cur,0,-1):
                 garra=''
@@ -361,45 +361,45 @@ def targetWriterPlace():
                 
                 
                 
-                target2.write( dat1.HeaderCase.format(j))
-                target2.write( dat1.TrayCase1.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target2.write( dat1.TrayCase2.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target2.write( dat1.TrayCase3.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
+                target2.write(dat2.HeaderCase.format(j))
+                target2.write(dat2.TrayCase1.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target2.write(dat2.TrayCase2.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target2.write(dat2.TrayCase3.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
                 #################################################
                 if x>=2:
-                        target2.write( dat1.TrayCase11.format(garra1))
+                        target2.write(dat2.TrayCase11.format(garra1))
                 #################################################
                 
-                target2.write( dat1.TrayCase4.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
+                target2.write(dat2.TrayCase4.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
                 if x<2:
-                    target2.write( dat1.TrayCase14.format())
+                    target2.write(dat2.TrayCase14.format())
                     
                 #################################################
                 if x>=2:
-                        target2.write( dat1.TrayCase10.format(garra))
+                        target2.write(dat2.TrayCase10.format(garra))
                 #################################################   
                 
-                target2.write( dat1.TrayCase5.format(garra))
-		target2.write( dat1.TrayCase13.format())
-                target2.write( dat1.TrayCase15.format())
-                target2.write( dat1.TrayCase6.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target2.write( dat1.TrayCase7.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target2.write( dat1.TrayCase12.format(LS,direct))
-                target2.write( dat1.TrayCase8.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target2.write( dat1.TrayCase9.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
+                target2.write(dat2.TrayCase5.format(garra))
+		target2.write(dat2.TrayCase13.format())
+                target2.write(dat2.TrayCase15.format())
+                target2.write(dat2.TrayCase6.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target2.write(dat2.TrayCase7.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target2.write(dat2.TrayCase12.format(LS, direct))
+                target2.write(dat2.TrayCase8.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target2.write(dat2.TrayCase9.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
                 
-                target3.write( dat1.TrayCase1_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target3.write( dat1.TrayCase2_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target3.write( dat1.TrayCase3_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target3.write( dat1.TrayCase4_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target3.write( dat1.TrayCase6_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target3.write( dat1.TrayCase7_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
+                target3.write(dat2.TrayCase1_dat.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target3.write(dat2.TrayCase2_dat.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target3.write(dat2.TrayCase3_dat.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target3.write(dat2.TrayCase4_dat.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target3.write(dat2.TrayCase6_dat.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
+                target3.write(dat2.TrayCase7_dat.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
                 #target3.write( dat1.TrayCase8_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
-                target3.write( dat1.TrayCase9_dat.format(points,NumToolGarra, ToolGarra, (openExcel.baseList[(i-1)]),getBase(i)))
+                target3.write(dat2.TrayCase9_dat.format(points, NumToolGarra, ToolGarra, (openExcel.baseList[(i - 1)]), getBase(i)))
                 x+=1
                 
-        target2.write( dat1.FootSrc)
-        target3.write( dat1.FootDat)
+        target2.write(dat2.FootSrc)
+        target3.write(dat2.FootDat)
 
 
         target2.close()
@@ -413,9 +413,9 @@ def targetWriterVision():
         global filename3
 
         cur=openExcel.NumCuring
-        target4.write(dat2.HeaderSrc)
-        target4.write(dat2.DeclSrc.format(filename3))
-        target5.write(dat2.HeaderDat.format(filename3))
+        target4.write(dat3.HeaderSrc)
+        target4.write(dat3.DeclSrc.format(filename3))
+        target5.write(dat3.HeaderDat.format(filename3))
         
         for i in range(cur,0,-1):
                 garra1=''
@@ -434,26 +434,26 @@ def targetWriterVision():
                         garra1='Z2_1'
                 ########################################################################
                                 
-                target4.write( dat2.HeaderCase.format(j))
-                target4.write( dat2.TrayCase1.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target4.write( dat2.TrayCase2.format(points, NumToolGarra, ToolGarra, 1,'pick'))
-                target4.write( dat2.TrayCase3.format(points, NumToolGarra, ToolGarra, 1,'pick'))
+                target4.write(dat3.HeaderCase.format(j))
+                target4.write(dat3.TrayCase1.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target4.write(dat3.TrayCase2.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target4.write(dat3.TrayCase3.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
                 
-                target4.write( dat2.TrayCase4.format())
+                target4.write(dat3.TrayCase4.format())
                 
-                target4.write( dat2.TrayCase5.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target4.write( dat2.TrayCase6.format(points,NumToolGarra, ToolGarra, 1,'pick'))
+                target4.write(dat3.TrayCase5.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target4.write(dat3.TrayCase6.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
                 
                 
-                target5.write( dat2.TrayCase1_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target5.write( dat2.TrayCase2_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target5.write( dat2.TrayCase3_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target5.write( dat2.TrayCase5_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
-                target5.write( dat2.TrayCase6_dat.format(points,NumToolGarra, ToolGarra, 1,'pick'))
+                target5.write(dat3.TrayCase1_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target5.write(dat3.TrayCase2_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target5.write(dat3.TrayCase3_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target5.write(dat3.TrayCase5_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
+                target5.write(dat3.TrayCase6_dat.format(points, NumToolGarra, ToolGarra, 1, 'pick'))
         
                 
-        target4.write( dat2.FootSrc)
-        target5.write( dat2.FootDat)
+        target4.write(dat3.FootSrc)
+        target5.write(dat3.FootDat)
 
 
         target4.close()

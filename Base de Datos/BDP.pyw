@@ -148,7 +148,7 @@ class MyFrame(wx.Frame):
         term = self.search.GetValue()
         index = self.searchProyectCtrl.GetCurrentSelection()
         field = searchList[index]
-        print field
+        print (field)
         
         self.proyectsCtrl.DeleteAllItems()
         conn = sqlite3.connect('BDP.db')
@@ -239,9 +239,9 @@ class MyFrame(wx.Frame):
             self.proyectsCtrl.SetStringItem(index,1,str(i[1]))
             self.proyectsCtrl.SetStringItem(index,2,str(i[2]))
             stringCliente=(i[4]).encode('utf-8')
-            self.proyectsCtrl.SetStringItem(index,3,unicode(stringCliente, 'utf-8'))
+            self.proyectsCtrl.SetStringItem(index,3,str(stringCliente, 'utf-8'))
             stringFab=(i[5]).encode('utf-8')
-            self.proyectsCtrl.SetStringItem(index,4,unicode(stringFab, 'utf-8'))
+            self.proyectsCtrl.SetStringItem(index,4,str(stringFab, 'utf-8'))
             index = index + 1            
             
             
@@ -299,10 +299,10 @@ class MyFrame(wx.Frame):
         val = dlg.ShowModal()
     
         if val == wx.ID_OK:
-            print 'Ok pressed'
+            print ('Ok pressed')
             
         else:
-            print 'cancel pressed'
+            print ('cancel pressed')
             
 
         dlg.Destroy()
@@ -337,7 +337,7 @@ class MyFrame(wx.Frame):
            
             date.Set(int(dates[0]),int(dates[1])-1,int(dates[2]))
             date.FormatDate()
-            print date
+            print (date)
             editDlg.fechaProyectCtrl.SetValue(date)
             editDlg.clientProyectCtrl.SetValue(data[4])
             editDlg.factoryProyectCtrl.SetValue(data[5])
@@ -370,10 +370,10 @@ class MyFrame(wx.Frame):
             val = editDlg.ShowModal()
         
             if val == wx.ID_OK:
-                print 'Ok pressed'
+                print ('Ok pressed')
                 
             else:
-                print 'cancel pressed'
+                print ('cancel pressed')
                 
             editDlg.Destroy()
             self.readTable()
@@ -595,7 +595,7 @@ class AddDialog(wx.Dialog):
 
         result=dlg.ShowModal()
         dlg.Destroy() 
-        print result
+        print (result)
         if result==5103:
             ######data gathering###############
             carpetas=self.folderCtrl.GetItems()
@@ -764,10 +764,10 @@ class ShowFrame(wx.Frame):
         
     def OnButton(self, evt):
         index=self.folderCtrl.GetSelection()
-        print index
+        print (index)
         if index >= 0:
             path=self.folderCtrl.GetString(index)
-            print path
+            print (path)
             if path!='':        
                 subprocess.call(['explorer', path])
                 
@@ -956,7 +956,7 @@ class EditDialog(wx.Dialog):
 
         result=dlg.ShowModal()
         dlg.Destroy()  
-        print result 
+        print (result)
         if result==5103:
             ######data gathering###############
             carpetas=self.folderCtrl.GetItems()
