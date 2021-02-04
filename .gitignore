@@ -134,3 +134,6 @@ dmypy.json
 /.idea/inspectionProfiles/profiles_settings.xml
 
 
+/.idea/.gitignore
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
