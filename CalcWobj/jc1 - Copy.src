@@ -1,0 +1,846 @@
+&ACCESS RVO1
+&REL 1393
+&COMMENT Mercedes
+&PARAM DISKPATH = KRC:\R1\Program\REFERENCIAS PIEZAS\REF_JC1
+DEF jc1 - Copy( )
+ ;FOLD INI;%{PE}
+  ;FOLD BASISTECH INI
+   GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS == TRUE DO IR_STOPM ( )
+   INTERRUPT ON 3
+   BAS (#INITMOV, 0 )
+  ;ENDFOLD (BASISTECH INI)
+  ;FOLD USER INI
+   ;Make your modifications here
+   
+  ;ENDFOLD (USER INI)
+ ;ENDFOLD (INI)
+ 
+ WHILE TRUE
+  
+  ;FOLD CARGAR PIEZAS DE PALET A SWU (FASE1)  
+   ;FOLD PERMISO COGER DE ALIMENTADOR
+    IF iPerm_coger_alimentador THEN
+     ;Coger Pieza1 Izq. de palet, alimentador 1
+     IF iPerm_cog_ali_P1 THEN
+      coger_alimentador(1) ;
+      nCONTA_PIEZAS_ALI = nCONTA_PIEZAS_ALI+1
+     ENDIF
+     ;Coger Pieza3 Izq. de palet, alimentador 2
+     IF iPerm_cog_ali_P3 THEN
+      coger_alimentador(3) ;
+      nCONTA_PIEZAS_ALI = nCONTA_PIEZAS_ALI+1
+     ENDIF
+     ;Coger Pieza1 Drch. de palet, alimentador 1
+     IF iPerm_cog_ali_P2 THEN
+      coger_alimentador(2) ;
+      nCONTA_PIEZAS_ALI = nCONTA_PIEZAS_ALI+1
+     ENDIF
+     ;Coger Pieza4 Drch. de palet, alimentador 2
+     IF iPerm_cog_ali_P4 THEN
+      coger_alimentador(4) ;
+      nCONTA_PIEZAS_ALI = nCONTA_PIEZAS_ALI+1
+     ENDIF
+     IF nCONTA_PIEZAS_ALI >= 4 THEN
+      nCICLOS = nCICLOS+1 ;Contador de Numero de nCICLOS en Ejecucion
+      nCONTA_PIEZAS_ALI = 0
+     ENDIF 
+    ENDIF
+   ;ENDFOLD
+   
+   ;FOLD PERMISO DEJAR EN SWU-FASE1
+    IF iPerm_dejar_SWU THEN
+     ;Dejar pieza 1 izq. en SWU Fase 1
+     IF iPerm_dej_SWU_P1 THEN
+      dejar_swU(2) ;
+     ENDIF
+     ;Dejar pieza 3 izq. en SWU Fase 1    
+     IF iPerm_dej_SWU_P3 THEN
+      dejar_swU(4) ;
+     ENDIF
+     ;Dejar pieza 2 izq. en SWU Fase 1
+     IF iPerm_dej_swU_P2 THEN
+      dejar_swU(1) ;
+     ENDIF
+     ;Dejar pieza 4 izq. en SWU Fase 1    
+     IF iPerm_dej_SWU_P4 THEN
+      dejar_swU(3) ;  
+      WAIT FOR NOT iPieza_en_Robot
+      Cierre_pinza1() ; Desactivamos la salida para cerrar la pinza
+      Cierre_pinza2() ; Activamos la salida para abrir la pinza
+      ;CAMBIAMOS DE LA GARRA 1 (BRUTO/II) A LA GARRA 2 (III/III)
+      CAMBIO_A_CABEZAL_2() 
+     ENDIF
+    ENDIF
+   ;ENDFOLD
+  ;ENDFOLD
+  
+  ;SI SE PRESELECCIONA EN LA PANTALLA LA OPCION DE OPERACIONES EN PUESTO INTERMEDIO
+  ; Coger para hacer operaciones, si se mueve a mano para que de fin operaciones...
+  ; Si hubiera operaciones, cuando se deja, habría que utilizar el permiso de...
+  ; dejar con operaciones. Posteriormente coger de pi con operaciones para cargar
+  
+  ;FOLD OPERACIONES EN PUESTO INTERMEDIO
+   IF iOperaciones_PI THEN
+    IF iPerm_cog_PI THEN
+     IF iPerm_cog_pi_P1 THEN
+      oP1_Fin_op_pi = TRUE
+      WAIT SEC 0.5 ;
+      oP1_Fin_op_pi = FALSE
+     ENDIF
+     IF iPerm_cog_pi_P2 THEN
+      oP2_Fin_op_pi = TRUE
+      WAIT SEC 0.5 ;
+      oP2_Fin_op_pi = FALSE
+     ENDIF
+     IF iPerm_cog_pi_P3 THEN
+      oP3_Fin_op_pi = TRUE
+      WAIT SEC 0.5 ;
+      oP3_Fin_op_pi = FALSE
+     ENDIF
+     IF iPerm_cog_pi_P4 THEN
+      oP4_Fin_op_pi = TRUE
+      WAIT SEC 0.5 ;
+      oP4_Fin_op_pi = FALSE
+     ENDIF
+    ENDIF
+   ENDIF
+  ;ENDFOLD
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;INICIO OPERACIONES FASE 1 - FASE 2;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;COGER PIEZAS DE PUESTO VOLTEO PARA DESCARGAR EN CINTA SALIDA;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  ;FOLD OPERACIONES EN FAS1-FASE2
+   IF iPerm_Operaciones_F1_F2 THEN
+    ;;;COGEMOS PIEZAS DEL PUESTO DE VOLTEO
+    IF iPerm_coger_pv THEN
+     ;;Coger pieza 1 drcha de PV1
+     IF iPerm_cog_PV_P1 THEN
+      ;Limpieza piezas 1 de PV
+      coger_pv(1)
+     ENDIF
+     ;;Coger pieza 2 izq de PV1
+     IF iPerm_cog_pv_P2 THEN
+      ;Limpieza piezas 4 de PV
+      coger_pv(2)
+     ENDIF
+     ;COGEMOS LA PIEZA 3 IZQUIERDA LH2 DEL PV2 O PV3
+     IF iPerm_cog_PV_P3 AND NOT iPV3_ACTIVO THEN
+      ;soplamos las piezas 2 y 3
+      ;Limpieza piezas 2 3 y PV
+      coger_pv(3)
+     ELSE 
+      IF iPerm_cog_PV_P3 AND iPV3_ACTIVO THEN
+       coger_pv3(2)
+      ENDIF 
+     ENDIF
+     ;COGEMOS LA PIEZA 4 DERECHA RH2 DEL PV2 O PV3
+     IF iPerm_cog_PV_P4 AND NOT iPV3_ACTIVO THEN
+      ;soplamos las piezas 2 y 3
+      ;Limpieza piezas 2 3 y PV
+      coger_pv(4)
+     ELSE 
+      IF iPerm_cog_PV_P4 AND iPV3_ACTIVO THEN
+       coger_pv3(1)
+      ENDIF 
+     ENDIF 
+    ENDIF
+    ;DEJAMOS PIEZAS EN PUESTO LASER
+    IF iPerm_dejar_puesto_laser THEN
+     ;Dejamos la pieza 1 drcha en puesto laser
+     IF iPerm_dej_Laser_P1 THEN
+      dejar_puesto_Laser(1)
+     ENDIF
+     ;Dejamos la pieza 2 izq en puesto laser
+     IF iPerm_dej_Laser_p2 THEN
+      dejar_puesto_Laser(2)
+     ENDIF
+     ;Dejamos la pieza 3 drcha en puesto laser
+     IF iPerm_dej_Laser_P3 THEN
+      dejar_puesto_Laser(3)
+     ENDIF
+     ;Dejamos la pieza 4 izq en puesto laser
+     IF iPerm_dej_Laser_p4 THEN
+      dejar_puesto_Laser(4)
+     ENDIF
+    ENDIF
+    
+    ;COGEMOS PIEZAS DEL PUESTO LASER
+    IF iPerm_coger_puesto_Laser THEN
+     ;Vamos a descargar la pieza 1 del puesto laser
+     IF iPerm_cog_Laser_p1 THEN
+      coger_puesto_Laser(1)
+     ENDIF
+     ;Vamos a descargar la pieza 2 del puesto laser
+     IF iPerm_cog_Laser_P2 THEN
+      coger_puesto_Laser(2)
+     ENDIF
+     ;Vamos a descargar la pieza 3 del puesto laser
+     IF iPerm_cog_Laser_p3 THEN
+      coger_puesto_Laser(3)
+     ENDIF
+     ;Vamos a descargar la pieza 4 del puesto laser
+     IF iPerm_cog_Laser_p4 THEN
+      coger_puesto_Laser(4)
+     ENDIF
+    ENDIF 
+    
+    ;DEJAMOS PIEZAS EN LA CINTA DE SALIDA
+    
+    IF iPerm_dejar_cinta THEN
+     ;vamos a dejar la pieza 1 drcha en la cinta
+     IF iPerm_dej_salida_P1 AND iPuesto_Laser THEN
+      mensaje(20, FALSE)
+      WAIT FOR iVision_ok OR iVision_nok
+      MSGLOOP(" ")
+      IF iVision_ok AND NOT iVision_nok THEN
+       dejar_cinta_salida(1)
+      ELSE
+       IR_A_HOME_VISION_NOK()
+       mensaje(21, TRUE) 	
+      ENDIF
+     ELSE
+      IF iPerm_dej_salida_P1 AND NOT iPuesto_Laser THEN
+       dejar_cinta_salida_SL(1)
+      ENDIF
+     ENDIF
+     ;vamos a dejar la pieza 2 drcha en la cinta
+     IF iPerm_dej_salida_P2 AND iPuesto_Laser THEN
+      mensaje(20, FALSE)
+      WAIT FOR iVision_ok OR iVision_nok
+      MSGLOOP(" ")
+      IF iVision_ok AND NOT iVision_nok THEN
+       dejar_cinta_salida(3)
+      ELSE
+       IR_A_HOME_VISION_NOK()
+       mensaje(21, TRUE) 	
+      ENDIF
+     ELSE 
+      IF iPerm_dej_salida_P2 AND NOT iPuesto_Laser THEN
+       dejar_cinta_salida_SL(3)
+      ENDIF
+     ENDIF 
+     
+     ;vamos a dejar la pieza 3 IZQ en la cinta
+     IF iPerm_dej_salida_P3 AND iPuesto_Laser THEN
+      ;damos fin de operaciones dejando la pieza 4 en el puesto de volteo y la pieza 3 en el puesto laser
+      oFIN_OPERACIONES_F1_F2 = TRUE
+      ;==============================
+      mensaje(20, FALSE)
+      WAIT FOR iVision_ok OR iVision_nok
+      MSGLOOP(" ")
+      IF iVision_ok AND NOT iVision_nok THEN
+       dejar_cinta_salida(2)
+      ELSE
+       WAIT SEC 0.5
+       oFIN_OPERACIONES_F1_F2 = FALSE
+       IR_A_HOME_VISION_NOK()
+       mensaje(21, TRUE) 	
+      ENDIF
+      ;==============================
+      oFIN_OPERACIONES_F1_F2 = FALSE
+     ELSE 
+      IF iPerm_dej_salida_P3 AND NOT iPuesto_Laser THEN
+       dejar_cinta_salida_SL(2)
+      ENDIF
+     ENDIF 
+     ;vamos a dejar la pieza 4 drcha en la cinta
+     IF iPerm_dej_salida_P4 AND iPuesto_Laser THEN 
+      mensaje(20, FALSE)
+      WAIT FOR iVision_ok OR iVision_nok
+      MSGLOOP(" ")
+      IF iVision_ok AND NOT iVision_nok THEN
+       dejar_cinta_salida(4)
+      ELSE
+       IR_A_HOME_VISION_NOK()
+       mensaje(21, TRUE) 	
+      ENDIF
+     ELSE 
+      IF iPerm_dej_salida_P4 AND NOT iPuesto_Laser THEN
+       oFIN_OPERACIONES_F1_F2 = TRUE
+       dejar_cinta_salida_SL(4)
+       oFIN_OPERACIONES_F1_F2 = FALSE
+      ENDIF
+     ENDIF 
+    ENDIF
+   ENDIF
+  ;ENDFOLD
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;; DESCARGAR PIEZAS DE SWA (FASE 2) PARA DEJARLAS EN PV ;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+  
+  ;FOLD PERMISO COGER DE SWA-FASE2
+   IF iPerm_coger_SWA THEN
+    IF NOT CHK_DETECTOR_SW_LASER() THEN
+     IR_A_HOME()
+     mensaje(22, TRUE) 
+    ELSE
+     ; COGEMOS LA PIEZA 1 IZQUIERDA LH1 DE LA FASE 2
+     IF iPerm_cog_swA_P1 THEN
+      ; oP1_Fin_op_pv=1
+      coger_swA(1)
+      ; oP1_Fin_op_pv=0
+     ENDIF
+     ; COGEMOS LA PIEZA 2 DERECHA RH1 DE LA FASE 2
+     IF iPerm_cog_swA_P2 THEN
+      ; oP2_Fin_op_pv=1
+      coger_swA(2)
+      ; oP2_Fin_op_pv=0
+     ENDIF
+     ; COGEMOS LA PIEZA 3 DERECHA RH2 DE LA FASE 2
+     IF iPerm_cog_swA_P3 THEN
+      ; P3_Fin_op_pv=1
+      coger_swA(3)
+      ; P3_Fin_op_pv=0
+     ENDIF
+     ; COGEMOS LA PIEZA 4 IZQUIERDA LH1 DE LA FASE 2
+     IF iPerm_cog_swA_P4 THEN
+      ; P4_Fin_op_pv=1
+      coger_swA(4)
+      ; P4_Fin_op_pv=0
+     ENDIF 
+    ENDIF
+   ENDIF 
+  ;ENDFOLD
+  
+  ;FOLD PERMISO DEJAR EN PUESTO DE VOLTEO
+   IF iPerm_dejar_PV THEN
+    ;DEJAMOS LA PIEZA 1 IZQ LH1 EN EL PV1
+    IF iPerm_dej_pv_P1 THEN
+     dejar_PV(1)
+    ENDIF
+    ;DEJAMOS LA PIEZA 2 DCHA RH1 EN EL PV1
+    IF iPerm_dej_pv_P2 THEN
+     dejar_PV(2)
+    ENDIF
+    ;DEJAMOS LA PIEZA 3 IZQ LH2 EN EL PV2 O PV3
+    IF iPerm_dej_pv_P3 AND NOT iPV3_ACTIVO THEN
+     dejar_PV(3)
+    ELSE 
+     IF iPerm_dej_pv_P3 AND iPV3_ACTIVO THEN
+      dejar_PV3(2)
+     ENDIF
+    ENDIF
+    ;DEJAMOS LA PIEZA 4 DERECHA RH2 EN EL PV2 O PV3
+    IF iPerm_dej_pv_P4 AND NOT iPV3_ACTIVO THEN
+     dejar_PV(4)
+    ELSE 
+     IF iPerm_dej_pv_P3 AND iPV3_ACTIVO THEN
+      dejar_PV3(1)
+     ENDIF 
+    ENDIF 
+   ENDIF 
+  ;ENDFOLD
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;; COGER PIEZAS DE PUESTO INTERMEDIO PARA CARGAR SWA FASE2 ;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+  
+  ;FOLD PERMISO COGER DE PUESTO INTERMEDIO
+   IF iPerm_cog_PI THEN
+    ;COGEMOS LA PIEZA 4 IZQ DE PI
+    IF iPerm_cog_pi_P4 THEN
+     coger_pi(4)
+    ENDIF
+    ;COGEMOS LA PIEZA 2 DRCHA DE PI
+    IF iPerm_cog_pi_P2 THEN
+     coger_pi(2)
+    ENDIF
+    ;COGEMOS LA PIEZA 3 IZQ DE PI
+    IF iPerm_cog_pi_P3 THEN
+     coger_pi(3)
+    ENDIF 
+    ;COGEMOS LA PIEZA 1 DRCHA DE PI
+    IF iPerm_cog_pi_P1 THEN
+     coger_pi(1)
+    ENDIF
+   ENDIF
+  ;ENDFOLD
+  
+  
+  ;FOLD PERMISO DEJAR EN SWA-FASE2
+   IF iPerm_dej_SWA THEN
+    ;DEJAMOS LA PIEZA 4 DRCHA EN SWU
+    IF iPerm_dej_swA_P4 THEN
+     ;Limpiar_MESA_A_en_SW ()
+     dejar_swA(4)
+     oSopladoPI2 = FALSE
+    ENDIF
+    ;DEJAMOS LA PIEZA 2 DRCHA EN SWU
+    IF iPerm_dej_swA_P2 THEN
+     dejar_swA(2)
+    ENDIF
+    ;DEJAMOS LA PIEZA 3 IZQ EN SWU
+    IF iPerm_dej_swA_P3 THEN
+     dejar_swA(3)
+    ENDIF 
+    ;DEJAMOS LA PIEZA 1 IZQ EN SWU
+    IF iPerm_dej_swA_P1 THEN
+     dejar_swA(1)
+    ENDIF
+   ENDIF
+  ;ENDFOLD
+  
+  ;; SI SE PRESELECCIONA EN LA PANTALLA LA OPCION DE OPERACIONES EN PUESTO DE VOLTEO;;
+  ;; Coger para hacer operaciones, si se mueve a mano para que de fin operaciones...;;
+  ;; Si hubiera operaciones, cuando se deja, habría que utilizar el permiso de...;;
+  ;; dejar con operaciones. Posteriormente coger de pi con operaciones para cargar;;
+  
+  ;FOLD OPERACIONES PUESTO DE VOLTEO
+   IF iOperaciones_PV THEN
+    IF iPerm_coger_pv THEN
+     IF iPerm_cog_PV_P1 THEN
+      oP1_Fin_op_pv = TRUE
+      WAIT SEC 0.5
+      oP1_Fin_op_pv = FALSE
+     ENDIF
+     IF iPerm_cog_pv_P2 THEN
+      oP2_Fin_op_pv = TRUE
+      WAIT SEC 0.5
+      oP2_Fin_op_pv = FALSE
+     ENDIF
+     IF iPerm_cog_PV_P3 THEN
+      oP3_Fin_op_pv = TRUE
+      WAIT SEC 0.5
+      oP3_Fin_op_pv = FALSE
+     ENDIF
+     IF iPerm_cog_PV_P4 THEN
+      oP4_Fin_op_pv = TRUE
+      WAIT SEC 0.5
+      oP4_Fin_op_pv = FALSE
+     ENDIF 
+    ENDIF
+   ENDIF 
+  ;ENDFOLD
+  
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  
+  ;FOLD PERMISO OPERACIONES FASE2-FASE1
+   IF iPerm_operaciones_F2_F1 THEN 
+    IF iPuesto_Laser == TRUE THEN
+     ;; Cogemos pieza del puesto de volteo
+     
+     ;; Cogemos piezas del puesto laser
+     IF iPerm_coger_puesto_Laser THEN
+      ;vamos a descargar la pieza 1 drcha del laser
+      IF iPerm_cog_Laser_p1 THEN
+       coger_puesto_Laser(1)
+      ENDIF
+      ;vamos a descargar la pieza 2 del puesto laser
+      IF iPerm_cog_Laser_P2 THEN
+       coger_puesto_Laser(2)
+      ENDIF
+      ;vamos a descargar la pieza 3 del puesto laser
+      IF iPerm_cog_Laser_p3 THEN
+       coger_puesto_Laser(3)
+      ENDIF
+      ;vamos a descargar la pieza 4 del puesto laser
+      IF iPerm_cog_Laser_p4 THEN
+       coger_puesto_Laser(4)
+      ENDIF 
+     ENDIF
+     
+     ;; Dejamos piezas del puesto laser
+     IF iPerm_dejar_puesto_laser THEN
+      ;dejamos la pieza 1 drcha del laser
+      IF iPerm_dej_Laser_P1 THEN
+       dejar_puesto_Laser(1)
+      ENDIF
+      ;dejamos la pieza 2 del puesto laser
+      IF iPerm_dej_Laser_p2 THEN
+       dejar_puesto_Laser(2)
+      ENDIF
+      ;dejamos la pieza 3 del puesto laser
+      IF iPerm_dej_Laser_P3 THEN
+       dejar_puesto_Laser(3)
+      ENDIF
+      ;dejamos la pieza 4 del puesto laser
+      IF iPerm_dej_Laser_p4 THEN
+       dejar_puesto_Laser(4)
+      ENDIF 
+     ENDIF
+     
+     ;; Dejamos piezas en la cinta de salida
+     IF iPerm_dejar_cinta THEN
+      ;;vamos a dejar la pieza 1 drcha en la cinta
+      IF iPerm_dej_salida_P1 AND iPuesto_Laser THEN 
+       mensaje(20, FALSE)
+       WAIT FOR iVision_ok OR iVision_nok
+       MSGLOOP(" ")
+       IF iVision_ok AND NOT iVision_nok THEN
+        dejar_cinta_salida(1)
+       ELSE
+        IR_A_HOME_VISION_NOK()
+        mensaje(21, TRUE) 	
+       ENDIF 
+      ELSE 
+       IF iPerm_dej_salida_P1 AND NOT iPuesto_Laser THEN
+        dejar_cinta_salida_SL(1) 
+       ENDIF 
+      ENDIF 
+      ;;vamos a dejar la pieza 2 drcha en la cinta
+      IF iPerm_dej_salida_P2 AND iPuesto_Laser THEN
+       mensaje(20, FALSE)
+       WAIT FOR iVision_ok OR iVision_nok
+       MSGLOOP(" ")
+       IF iVision_ok AND NOT iVision_nok THEN
+        dejar_cinta_salida(3)
+       ELSE
+        IR_A_HOME_VISION_NOK()
+        mensaje(21, TRUE) 	
+       ENDIF
+      ELSE 
+       IF iPerm_dej_salida_P2 AND NOT iPuesto_Laser THEN
+        dejar_cinta_salida_SL(3) 
+       ENDIF
+      ENDIF 
+      ;;vamos a dejar la pieza 3 izq en la cinta
+      IF iPerm_dej_salida_P3 AND iPuesto_Laser THEN
+       mensaje(20, FALSE)
+       WAIT FOR iVision_ok OR iVision_nok
+       MSGLOOP(" ")
+       IF iVision_ok AND NOT iVision_nok THEN
+        dejar_cinta_salida(2)
+       ELSE
+        IR_A_HOME_VISION_NOK()
+        mensaje(21, TRUE) 	
+       ENDIF
+      ELSE 
+       IF iPerm_dej_salida_P3 AND NOT iPuesto_Laser THEN
+        dejar_cinta_salida_SL(2) 
+       ENDIF 
+      ENDIF 
+      ;;vamos a dejar la pieza 4 drcha en la cinta
+      IF iPerm_dej_salida_P4 AND iPuesto_Laser THEN
+       ;mandamos fin de operaciones F2_F1
+       oFIN_OPERACIONES_F2_F1 = TRUE
+       ;==================================
+       mensaje(20, FALSE)
+       WAIT FOR iVision_ok OR iVision_nok
+       MSGLOOP(" ")
+       IF iVision_ok AND NOT iVision_nok THEN
+        dejar_cinta_salida(4)
+       ELSE
+        WAIT SEC 0.5
+        oFIN_OPERACIONES_F2_F1 = FALSE
+        IR_A_HOME_VISION_NOK()
+        mensaje(21, TRUE) 	
+       ENDIF
+       ;================================
+       oFIN_OPERACIONES_F2_F1 = FALSE
+      ELSE 
+       IF iPerm_dej_salida_P4 AND NOT iPuesto_Laser THEN
+        ;mandamos fin de operaciones F2_F1
+        oFIN_OPERACIONES_F2_F1 = TRUE
+        dejar_cinta_salida_SL(4)
+        oFIN_OPERACIONES_F2_F1 = FALSE
+       ENDIF 
+      ENDIF 
+     ENDIF
+     
+     
+    ELSE
+     oFIN_OPERACIONES_F2_F1 = TRUE
+     WAIT SEC 8
+     oFIN_OPERACIONES_F2_F1 = FALSE
+    ENDIF
+   ENDIF
+  ;ENDFOLD
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;; DESCARGAR PIEZAS DE SWU FASE 1 A PUESTO INTERMEDIO ;;;;;;;;;;;;;;;;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
+  
+  ;FOLD PERMISO COGER SWU-FASE1
+   IF iPerm_coger_SWU THEN
+    IF NOT CHK_DETECTOR_SW_LASER() THEN
+     IR_A_HOME()
+     mensaje(22, TRUE)
+    ELSE
+     ;;Cogemos la pieza 1 drcha de la SWU FASE 1
+     IF iPerm_cog_swU_P1 THEN
+      ;n_manip_pi_d1:=0
+      ;Limpieza_Rodamiento_cali_en_SWU()     
+      coger_swU(1) 
+     ENDIF
+     ;;Cogemos la pieza 3 drcha de la SWU FASE 1
+     IF iPerm_cog_swU_P3 THEN
+      ;n_manip_pi_d2:=0
+      coger_swU(3)
+     ENDIF
+     ;;Cogemos la pieza 2 izq de la SWU FASE 1
+     IF iPerm_cog_swU_P2 THEN
+      ;n_manip_pi_d1:=0
+      coger_swU(2)
+     ENDIF
+     ;;Cogemos la pieza 4 izq de la SWU FASE 1
+     IF iPerm_cog_swU_P4 THEN
+      ;n_manip_pi_d1:=0
+      coger_swU(4)
+     ENDIF
+    ENDIF
+   ENDIF
+  ;ENDFOLD
+  
+  ;FOLD PERMISO DEJAR EN PUESTO INTERMEDIO
+   IF iPerm_dejar_PI THEN
+    ;;Dejamos la pieza 1 drcha en el puesto intermedio
+    IF iPerm_dej_pi_P1 THEN
+     oP1_Fin_op_pi = TRUE
+     dejar_PI(2)
+     oP1_Fin_op_pi = FALSE
+    ENDIF
+    ;;Dejamos la pieza 3 drcha en el puesto intermedio
+    IF iPerm_dej_pi_P3 THEN
+     oP3_Fin_op_pi = TRUE
+     dejar_PI(4)
+     oP3_Fin_op_pi = FALSE
+    ENDIF
+    ;;Dejamos la pieza 2 izq en el puesto intermedio
+    IF iPerm_dej_pi_P2 THEN
+     oP2_Fin_op_pi = TRUE
+     dejar_PI(1)
+     oP2_Fin_op_pi = FALSE
+    ENDIF
+    ;;Dejamos la pieza 4 izq en el puesto intermedio
+    IF iPerm_dej_pi_P4 THEN
+     oP4_Fin_op_pi = TRUE
+     dejar_PI(3)
+     oP4_Fin_op_pi = FALSE
+    ENDIF
+   ENDIF
+  ;ENDFOLD
+  
+  PETICION_PUERTA_ABIERTA()
+  WAIT SEC 0.3
+ ENDWHILE
+ 
+END 
+
+;==========PALETS ALIMENTADOR===================
+DEF coger_alimentador(ppieza:IN) ;!Coger pieza del palet
+ INT ppieza
+ WAIT FOR NOT iPieza_en_Robot 
+ ;!!CAMBIAMOS DE LA GARRA 2 (III/III) A LA GARRA 1 (BRUTO/II) SI PROCEDE
+ CAMBIO_A_CABEZAL_1()
+ CIERRE_PINZA1 ()
+ CIERRE_PINZA2 ()
+ 
+ SWITCH ppieza 
+   
+   
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+  CASE 1 ;! COGEMOS LA PIEZA 1 IZQUIERDA DEL ALIMENTADOR
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+   IR_A_HOME() 
+   ;FOLD PTP PC1_LH_ALI1 CONT Vel=100 % PDAT1 Tool[1]:T_CAB1_1 Base[1]:B_ALI1;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC1_LH_ALI1, 3:C_DIS, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC1_LH_ALI1
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC1_LH_ALI1 C_DIS
+   ;ENDFOLD
+   ;FOLD offset.Offset_PTP Posicion=PC_LH_ALI1, Offset_X=0mm, Offset_Y=0mm, Offset_Z=100mm, Velocidad=100%, Aprox.=5mm, TOOL=1, BASE=1;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_LH_ALI1, 0, 0, 100, #P, 100, 5, 1, 1)
+    
+   ;ENDFOLD
+   ;FOLD LIN PC_LH_ALI1 Vel=0.3 m/s CPDAT1 Tool[1]:T_CAB1_1 Base[1]:B_ALI1;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PC_LH_ALI1, 3:, 5:0.3, 7:CPDAT1
+    $BWDSTART = FALSE
+    LDAT_ACT = LCPDAT1
+    FDAT_ACT = FPC_LH_ALI1
+    BAS(#CP_PARAMS, 0.3)
+    LIN XPC_LH_ALI1 
+   ;ENDFOLD
+   ; !MANDAMOS SEÑAL PARA PONER LA PIEZA EN NARANJA EN CASO DE NO LLEGAR LA PIEZA A DESTIN
+   oCog_dej_pieza1 = TRUE
+   apertura_pinza1() 
+   CARGA_TOOL_OFFSET(1, Pieza_bruto)
+   oP1_cog_PT = TRUE
+   ;      
+   ;FOLD offset.Offset_LIN Posicion=PC_LH_ALI1, Offset_X=0mm, Offset_Y=0mm, Offset_Z=300mm, Velocidad=1000mm/s, Aprox.=1mm, TOOL=1, BASE=1;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_LH_ALI1, 0, 0, 300, #L, 1000, 1, 1, 1)
+    
+   ;ENDFOLD
+   oCog_dej_pieza1 = FALSE
+   oP1_cog_PT = FALSE
+   ;FOLD PTP PC11_LH_ALI1 CONT Vel=100 % PDAT57 Tool[1]:T_CAB1_1 Base[1]:B_ALI1;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC11_LH_ALI1, 3:C_DIS, 5:100, 7:PDAT57
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT57
+    FDAT_ACT = FPC11_LH_ALI1
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC11_LH_ALI1 C_DIS
+   ;ENDFOLD
+   ;FOLD PTP PC2_LH_ALI1 CONT Vel=100 % PDAT1 Tool[1]:T_CAB1_1 Base[1]:B_ALI1;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC2_LH_ALI1, 3:C_DIS, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC2_LH_ALI1
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC2_LH_ALI1 C_DIS
+   ;ENDFOLD
+   ;FOLD PTP PFUERA_LH_ALI1 CONT Vel=100 % PDAT1 Tool[1]:T_CAB1_1 Base[1]:B_ALI1;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PFUERA_LH_ALI1, 3:C_DIS, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPFUERA_LH_ALI1
+    BAS(#PTP_PARAMS, 100)
+    PTP XPFUERA_LH_ALI1 C_DIS
+   ;ENDFOLD
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  CASE 2 ;! COGEMOS LA PIEZA 2 DERECHA DEL ALIMENTADOR
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+   ;IR_A_HOME() 
+   ;FOLD PTP PC1_RH_ALI1 CONT Vel=100 % PDAT1 Tool[1] Base[1];%{PE}%R 8.3.22,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC1_RH_ALI1, 3:C_PTP, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC1_RH_ALI1
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC1_RH_ALI1 C_PTP
+   ;ENDFOLD
+   ;FOLD offset.Offset_PTP Posicion=PC_RH_ALI1, Offset_X=0mm, Offset_Y=0mm, Offset_Z=100mm, Velocidad=100%, Aprox.=5mm, TOOL=1, BASE=1;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_RH_ALI1, 0, 0, 100, #P, 100, 5, 1, 1)
+    
+   ;ENDFOLD
+   ;FOLD LIN PC_RH_ALI1 Vel=0.3 m/s CPDAT1 Tool[1]:T_CAB1_1 Base[1]:B_ALI1;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PC_RH_ALI1, 3:, 5:0.3, 7:CPDAT1
+    $BWDSTART = FALSE
+    LDAT_ACT = LCPDAT1
+    FDAT_ACT = FPC_RH_ALI1
+    BAS(#CP_PARAMS, 0.3)
+    LIN XPC_RH_ALI1 
+   ;ENDFOLD
+   ; !MANDAMOS SEÑAL PARA PONER LA PIEZA EN NARANJA EN CASO DE NO LLEGAR LA PIEZA A DESTINO        
+   oCog_dej_pieza2 = TRUE
+   apertura_pinza1() 
+   CARGA_TOOL_OFFSET(1, Pieza_bruto)
+   oP2_cog_PT = TRUE
+   ;
+   ;FOLD offset.Offset_LIN Posicion=PC_RH_ALI1, Offset_X=0mm, Offset_Y=0mm, Offset_Z=300mm, Velocidad=1000mm/s, Aprox.=5mm, TOOL=1, BASE=1;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_RH_ALI1, 0, 0, 300, #L, 1000, 5, 1, 1)
+    
+   ;ENDFOLD
+   oCog_dej_pieza2 = FALSE
+   oP2_cog_PT = FALSE
+   ;FOLD PTP PC1_RH_ALI1 CONT Vel=100 % PDAT1 Tool[1] Base[1];%{PE}%R 8.3.22,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC1_RH_ALI1, 3:C_PTP, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC1_RH_ALI1
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC1_RH_ALI1 C_PTP
+   ;ENDFOLD
+   ;FOLD PTP PC2_RH_ALI1 CONT Vel=100 % PDAT1 Tool[1] Base[1];%{PE}%R 8.3.22,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC2_RH_ALI1, 3:C_PTP, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC2_RH_ALI1
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC2_RH_ALI1 C_PTP
+   ;ENDFOLD
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  CASE 3 ;COGEMOS LA PIEZA 3 IZQUIERDA DEL ALIMENTADOR
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+   ;IR_A_HOME() 
+   ;FOLD PTP PC1_LH_ALI2 CONT Vel=100 % PDAT1 Tool[1] Base[2];%{PE}%R 8.3.22,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC1_LH_ALI2, 3:C_PTP, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC1_LH_ALI2
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC1_LH_ALI2 C_PTP
+   ;ENDFOLD                  
+   ;FOLD offset.Offset_LIN Posicion=PC_LH_ALI2, Offset_X=0mm, Offset_Y=0mm, Offset_Z=100mm, Velocidad=2000mm/s, Aprox.=10mm, TOOL=1, BASE=2;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_LH_ALI2, 0, 0, 100, #L, 2000, 10, 1, 2)
+    
+   ;ENDFOLD
+   ;FOLD LIN PC_LH_ALI2 Vel=0.3 m/s CPDAT1 Tool[1]:T_CAB1_1 Base[2]:B_ALI2;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PC_LH_ALI2, 3:, 5:0.3, 7:CPDAT1
+    $BWDSTART = FALSE
+    LDAT_ACT = LCPDAT1
+    FDAT_ACT = FPC_LH_ALI2
+    BAS(#CP_PARAMS, 0.3)
+    LIN XPC_LH_ALI2 
+   ;ENDFOLD
+   ; !MANDAMOS SEÑAL PARA PONER LA PIEZA EN NARANJA EN CASO DE NO LLEGAR LA PIEZA A DESTINO       
+   oCog_dej_pieza3 = TRUE
+   apertura_pinza1() 
+   CARGA_TOOL_OFFSET(1, Pieza_bruto)
+   oP3_cog_PT = TRUE
+   ;
+   ;FOLD offset.Offset_LIN Posicion=PC_LH_ALI2, Offset_X=0mm, Offset_Y=0mm, Offset_Z=300mm, Velocidad=1000mm/s, Aprox.=5mm, TOOL=1, BASE=2;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_LH_ALI2, 0, 0, 300, #L, 1000, 5, 1, 2)
+    
+   ;ENDFOLD
+   oCog_dej_pieza3 = FALSE
+   oP3_cog_PT = FALSE
+   ;FOLD PTP PC11_LH_ALI2 CONT Vel=100 % PDAT37 Tool[1]:T_CAB1_1 Base[2]:B_ALI2;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC11_LH_ALI2, 3:C_DIS, 5:100, 7:PDAT37
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT37
+    FDAT_ACT = FPC11_LH_ALI2
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC11_LH_ALI2 C_DIS
+   ;ENDFOLD
+   ;FOLD PTP PC2_LH_ALI2 CONT Vel=100 % PDAT36 Tool[1]:T_CAB1_1 Base[2]:B_ALI2;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC2_LH_ALI2, 3:C_DIS, 5:100, 7:PDAT36
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT36
+    FDAT_ACT = FPC2_LH_ALI2
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC2_LH_ALI2 C_DIS
+   ;ENDFOLD
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;             
+  CASE 4 ;;COGEMOS LA PIEZA 4 DERECHA DEL ALIMENTADOR
+   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;   
+   ;IR_A_HOME() 
+   ;FOLD PTP PC1_RH_ALI2 CONT Vel=100 % PDAT1 Tool[1] Base[2];%{PE}%R 8.3.22,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC1_RH_ALI2, 3:C_PTP, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC1_RH_ALI2
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC1_RH_ALI2 C_PTP
+   ;ENDFOLD                 
+   ;FOLD offset.Offset_PTP Posicion=PC_RH_ALI2, Offset_X=0mm, Offset_Y=0mm, Offset_Z=100mm, Velocidad=100%, Aprox.=10mm, TOOL=1, BASE=2;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_RH_ALI2, 0, 0, 100, #P, 100, 10, 1, 2)
+    
+   ;ENDFOLD
+   ;FOLD LIN PC_RH_ALI2 Vel=0.3 m/s CPDAT22 Tool[1]:T_CAB1_1 Base[2]:B_ALI2;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:PC_RH_ALI2, 3:, 5:0.3, 7:CPDAT22
+    $BWDSTART = FALSE
+    LDAT_ACT = LCPDAT22
+    FDAT_ACT = FPC_RH_ALI2
+    BAS(#CP_PARAMS, 0.3)
+    LIN XPC_RH_ALI2 
+   ;ENDFOLD
+   ; !MANDAMOS SEÑAL PARA PONER LA PIEZA EN NARANJA EN CASO DE NO LLEGAR LA PIEZA A DESTINO        
+   oCog_dej_pieza4 = TRUE
+   apertura_pinza1() 
+   CARGA_TOOL_OFFSET(1, Pieza_bruto)
+   oP4_cog_PT = TRUE 
+   ;
+   ;FOLD offset.Offset_LIN Posicion=PC_RH_ALI2, Offset_X=0mm, Offset_Y=0mm, Offset_Z=300mm, Velocidad=1000mm/s, Aprox.=10mm, TOOL=1, BASE=2;%{PE}%MKUKATPUSER
+    
+    Offset_fagor(XPC_RH_ALI2, 0, 0, 300, #L, 1000, 10, 1, 2)
+    
+   ;ENDFOLD
+   oCog_dej_pieza4 = FALSE
+   oP4_cog_PT = FALSE
+   ;FOLD PTP PC11_RH_ALI2 CONT Vel=100 % PDAT1 Tool[1]:T_CAB1_1 Base[2]:B_ALI2;%{PE}%R 8.3.43,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC11_RH_ALI2, 3:C_DIS, 5:100, 7:PDAT1
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC11_RH_ALI2
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC11_RH_ALI2 C_DIS
+   ;ENDFOLD
+   ;FOLD PTP PC2_RH_ALI2 CONT Vel=100 % PDAT2 Tool[1] Base[2];%{PE}%R 8.3.22,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:PC2_RH_ALI2, 3:C_PTP, 5:100, 7:PDAT2
+    $BWDSTART = FALSE
+    PDAT_ACT = PPDAT1
+    FDAT_ACT = FPC2_RH_ALI2
+    BAS(#PTP_PARAMS, 100)
+    PTP XPC2_RH_ALI2 C_PTP
+   ;ENDFOLD  
+  DEFAULT ;
+   mensaje (2, TRUE) ;         
+ ENDSWITCH
+ 
+END

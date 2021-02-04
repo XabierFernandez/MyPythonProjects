@@ -1,14 +1,12 @@
 
+from library import dat1, dat2
+from library import transformations as tran
+from wx.lib.wordwrap import wordwrap
 import sys
 import wx
 import os
 import math
 import sqlite3
-from library import dat 
-from library import dat1
-from library import transformations as tran
-from wx.lib.wordwrap import wordwrap
-
 
 
 #---------------------------------------------------------------------------
@@ -462,9 +460,9 @@ class MyFrame(wx.Frame):
         for i in data:
            
             listTools['TOOL']=(str(i[0]))
-            print listTools['TOOL']
+            print (listTools['TOOL'])
             listTools['UT']=(str(i[1]))
-            print listTools['UT']
+            print (listTools['UT'])
            
             listaTools.append(listTools.copy())
       
@@ -476,7 +474,7 @@ class MyFrame(wx.Frame):
             
             listaWobjs.append(listWobjs.copy())
             
-        print listaTools    
+        print (listaTools)
         
         
     def inicial(self):
@@ -548,10 +546,10 @@ class MyFrame(wx.Frame):
         val = dlg.ShowModal()
     
         if val == wx.ID_OK:
-            print ''
+            print ('')
             
         else:
-           print ''
+           print ('')
             
 
         dlg.Destroy()
@@ -862,19 +860,19 @@ class MyFrame(wx.Frame):
                     
                     
                     if move=='J':
-                        target.write( dat.POSJ.format(count,move,count1))
+                        target.write(dat1.POSJ.format(count, move, count1))
                     if move=='L':
-                        target.write( dat.POSL.format(count,move,count1))
+                        target.write(dat1.POSL.format(count, move, count1))
                     if move=='C':
-                        target.write( dat.POSC.format(count,move,count1))
+                        target.write(dat1.POSC.format(count, move, count1))
                         count1=count1+1
-                        target.write( dat.POSC1.format(count1))
+                        target.write(dat1.POSC1.format(count1))
                         
             
             lineasCount=count
                     
             count=0
-            target.write(dat.HeaderPOSDAT)
+            target.write(dat1.HeaderPOSDAT)
             for j in range(0,len(list)):
                 dictionary=list[j]
                 count=count+1
@@ -892,7 +890,7 @@ class MyFrame(wx.Frame):
                     tool=dictionary['UT']
                     wobj=dictionary['UF']
                     
-                    target.write( dat.POSDAT.format(count,punto,tx,ty,tz,rz,ry,rx,extj,wobj,tool))
+                    target.write(dat1.POSDAT.format(count, punto, tx, ty, tz, rz, ry, rx, extj, wobj, tool))
                     count=count+1
                     punto=dictionary['POINT1']
                     tx=dictionary['Tx1']
@@ -904,7 +902,7 @@ class MyFrame(wx.Frame):
                     extj=dictionary['EXTJ1']
                     tool=dictionary['UT']
                     wobj=dictionary['UF']
-                    target.write( dat.POSDAT.format(count,punto,tx,ty,tz,rz,ry,rx,extj,wobj,tool))
+                    target.write(dat1.POSDAT.format(count, punto, tx, ty, tz, rz, ry, rx, extj, wobj, tool))
             
                 else:
                     punto=dictionary['POINT']
@@ -918,9 +916,9 @@ class MyFrame(wx.Frame):
                     tool=dictionary['UT']
                     wobj=dictionary['UF']
                     
-                    target.write( dat.POSDAT.format(count,punto,tx,ty,tz,rz,ry,rx,extj,wobj,tool))
+                    target.write(dat1.POSDAT.format(count, punto, tx, ty, tz, rz, ry, rx, extj, wobj, tool))
                 
-            target.write( dat.FooterDAT)
+            target.write(dat1.FooterDAT)
             target.close()
             # read the current contents of the file 
             f = open(self.t4.GetValue()+ '\\' +fileName+".PE",'r')
@@ -928,20 +926,20 @@ class MyFrame(wx.Frame):
             f.close() 
             # open the file again for writing 
             f = open(self.t4.GetValue()+ '\\' + fileName+".PE",'w')
-            f.write(dat.HeaderPE.format(fileName,lineasCount)) 
+            f.write(dat1.HeaderPE.format(fileName, lineasCount))
             # write the original contents 
             f.write(text) 
             f.close() 
-            print 'fanuc'
+            print ('fanuc')
 ####################################################################################            
         if self.cb1.GetValue()=='KuKa':
             target=open(self.t4.GetValue()+ '\\' + fileName + ".src",'w')
             target1=open(self.t4.GetValue()+ '\\' + fileName + ".dat",'w')
             
             #headers
-            target.write( dat1.HeaderSrc)
-            target.write( dat1.DeclSrc.format(fileName))
-            target1.write( dat1.HeaderDat.format(fileName))
+            target.write(dat2.HeaderSrc)
+            target.write(dat2.DeclSrc.format(fileName))
+            target1.write(dat2.HeaderDat.format(fileName))
             
             for i in range(0,len(list)):
                     #Contadores inicializar
@@ -970,28 +968,28 @@ class MyFrame(wx.Frame):
                     
                     if punto!="HOME":
                         if move=='J':
-                            target.write( dat1.PTP.format(punto,tool,wobj))
-                            target1.write( dat1.PTP_dat.format(punto,tx,ty,tz,rz,ry,rx,extj,tool,wobj))
+                            target.write(dat2.PTP.format(punto, tool, wobj))
+                            target1.write(dat2.PTP_dat.format(punto, tx, ty, tz, rz, ry, rx, extj, tool, wobj))
                         if move=='L':
-                            target.write( dat1.LIN.format(punto,tool,wobj))
-                            target1.write( dat1.LIN_dat.format(punto,tx,ty,tz,rz,ry,rx,extj,tool,wobj))
+                            target.write(dat2.LIN.format(punto, tool, wobj))
+                            target1.write(dat2.LIN_dat.format(punto, tx, ty, tz, rz, ry, rx, extj, tool, wobj))
                         if move=='C':
-                            target.write( dat1.CIRC.format(punto,punto1,tool,wobj))
-                            target1.write( dat1.CIRC_dat.format(punto,tx,ty,tz,rz,ry,rx,extj))
-                            target1.write( dat1.CIRC_dat1.format(punto1,tx1,ty1,tz1,rz1,ry1,rx1,extj1,tool,wobj))
+                            target.write(dat2.CIRC.format(punto, punto1, tool, wobj))
+                            target1.write(dat2.CIRC_dat.format(punto, tx, ty, tz, rz, ry, rx, extj))
+                            target1.write(dat2.CIRC_dat1.format(punto1, tx1, ty1, tz1, rz1, ry1, rx1, extj1, tool, wobj))
                     else:
                 
-                        target.write( dat1.PTPHOME)
+                        target.write(dat2.PTPHOME)
                           
                         
             #################
-            target.write(dat1.FootSrc)
-            target1.write(dat1.FootDat)
+            target.write(dat2.FootSrc)
+            target1.write(dat2.FootDat)
            
             target.close()
             target1.close()
            
-            print 'kuka'
+            print ('kuka')
             
         
    

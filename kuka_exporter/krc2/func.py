@@ -1,13 +1,10 @@
 # Encoding: UTF-8
+from krc2 import openExcel,dat1,dat2,dat3
+from tkinter import messagebox
+import tkinter
 import os
 import sys
 import errno
-from krc2 import openExcel
-from krc2 import dat1
-from krc2 import dat2
-from krc2 import dat3
-import tkinter
-from tkinter import messagebox
 
 ToolGarra='ToolGarra'
 NumToolGarra=7
@@ -20,7 +17,7 @@ filename2=None
 
 
 
-path='output\\'
+path='output'
 toolStr=['TOOL_Z1_1','TOOL_Z1_2','TOOL_Z2_1','TOOL_Z2_2']
 baseStr=['pick','Par','Impar','BWB5S2','BWB4S2','BWB3S2','BWB2S2','BWB1S2','BWB5S1','BWB4S1','BWB3S1','BWB2S1','BWB1S1']
 
@@ -191,7 +188,7 @@ def createFileNamePlace():
         global target3
         global filename2
 
-        folder="output\\ROBOT{1}\\{3}H\\SET{2}\\STR{0}\\".format(isIntStr(openExcel.stringer),isRobot(openExcel.Robot), isSet(openExcel.Set),isLeftRight(openExcel.hand))
+        folder="output//ROBOT{1}//{3}H//SET{2}//STR{0}//".format(isIntStr(openExcel.stringer),isRobot(openExcel.Robot), isSet(openExcel.Set),isLeftRight(openExcel.hand))
     
         dir_out_exists(folder)
         
