@@ -36,7 +36,7 @@ def disect_float(f,b):
     return sign, mant, exp
 
 print("=================================================================")
-print('Sign:{0},Mantissa:{1},Exponent:{2}'.format(*disect_float(-0.0560001, 10)))
-print('The easy way: ' + str(math.frexp(-0.0560001)))
+print('Sign:{0},Mantissa:{1},Exponent:{2}'.format(*disect_float(-0.31415, 2)))
+print('The easy way: ' + str(math.frexp(-0.31415)))
 print("=================================================================")
 
