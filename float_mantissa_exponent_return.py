@@ -4,11 +4,12 @@ Getting sign,mantise and exponent
 import math
 
 
-def disect_float(f,b):
+def disect_float(f):
     f = float(f)  # fixes passing integers
     sign = '+'  # positive
     exp = 0
     mant = 0
+    b = 2
 
     if f < 0:  # make f positive, store the sign
         sign = '-'  # negative
@@ -34,9 +35,13 @@ def disect_float(f,b):
 
     mant = f / pow(b, exp)
     return sign, mant, exp
+try:
+    float_num = float(input("Enter a float number: "))
+    print("=================================================================")
+    print('Sign:{0},Mantissa:{1},Exponent:{2}'.format(*disect_float(float_num)))
+    print('The easy way: ' + str(math.frexp(float_num)))
+    print("=================================================================")
+except:
+    print("Entered a wrong number")
 
-print("=================================================================")
-print('Sign:{0},Mantissa:{1},Exponent:{2}'.format(*disect_float(-0.31415, 2)))
-print('The easy way: ' + str(math.frexp(-0.31415)))
-print("=================================================================")
 
