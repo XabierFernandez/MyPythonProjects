@@ -16,6 +16,7 @@ def dp_approach(n):
             array.append(int(i/2))
         elif count_1 <= min(count_3, count_2):
             array.append(i-1)
+
     print(dp[n])
     array_2 = [n]
     for i in range(dp[n]):
