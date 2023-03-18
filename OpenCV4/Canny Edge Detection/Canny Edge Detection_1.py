@@ -2,6 +2,7 @@ import numpy as np
 import cv2 as cv
 from matplotlib import pyplot as plt
 
+print(cv.__version__)
 img = cv.imread('../data/messi5.jpg',0)
 blur = cv.GaussianBlur(img,(3,3),0)
 

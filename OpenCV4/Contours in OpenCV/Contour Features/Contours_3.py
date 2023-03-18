@@ -13,7 +13,7 @@ cv.rectangle(img0,(x,y),(x+w,y+h),(0,255,0),2)
 
 rect = cv.minAreaRect(cnt)
 box = cv.boxPoints(rect)
-box = np.int0(box)
+box = np.intp(box)
 cv.drawContours(img0,[box],0,(0,0,255),2)
 
 (x,y),radius = cv.minEnclosingCircle(cnt)
