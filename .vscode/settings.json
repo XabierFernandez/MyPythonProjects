@@ -1,8 +1,0 @@
-{
-    "python.pythonPath": "/home/xabier/.virtualenvs/my_django_environment/bin/python",
-    "python.analysis.extraPaths": [
-    "/home/xabier/.virtualenvs/my_django_environment/lib/python3.10/site-packages/"
-    ]
-    
-    
-}

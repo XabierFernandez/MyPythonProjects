@@ -139,3 +139,4 @@ dmypy.json
 /.idea/vcs.xml
 /.idea/rSettings.xml
 OpenCV4/data/Screw.jpg
+.vscode/settings.json
