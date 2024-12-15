@@ -1,0 +1,26 @@
+<!<!DOCTYPE html>
+<html>
+<head>
+    <title>Guestbook</title>
+</head>
+<body>
+    <h1>Welcome to the Guestbook</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Enter your name:</label>
+        <input type="text" id="name" name="name">
+        <button type="submit">Submit</button>
+    </form>
+
+    <h2>Guest List:</h2>
+    <ul>
+        {% for guest in guests %}
+        <li>
+            {{ guest.name }}
+            <a href="{% url 'delete_guest' guest.id %}">[Delete]</a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
